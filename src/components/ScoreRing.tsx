@@ -13,19 +13,19 @@ const sizeConfig = {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 95) return "stroke-appreciation-tres-bon"
-  if (score >= 90) return "stroke-appreciation-bon"
-  if (score >= 85) return "stroke-appreciation-moyen"
-  if (score >= 80) return "stroke-appreciation-mauvais"
-  return "stroke-appreciation-tres-mauvais"
+  if (score >= 95) return "stroke-green-600"
+  if (score >= 90) return "stroke-green-500"
+  if (score >= 85) return "stroke-yellow-500"
+  if (score >= 80) return "stroke-orange-500"
+  return "stroke-red-500"
 }
 
 function getTextColor(score: number): string {
-  if (score >= 95) return "text-appreciation-tres-bon"
-  if (score >= 90) return "text-appreciation-bon"
-  if (score >= 85) return "text-appreciation-moyen"
-  if (score >= 80) return "text-appreciation-mauvais"
-  return "text-appreciation-tres-mauvais"
+  if (score >= 95) return "text-green-600"
+  if (score >= 90) return "text-green-500"
+  if (score >= 85) return "text-yellow-600"
+  if (score >= 80) return "text-orange-500"
+  return "text-red-500"
 }
 
 export function ScoreRing({ score, size = "md", className }: ScoreRingProps) {
@@ -49,7 +49,7 @@ export function ScoreRing({ score, size = "md", className }: ScoreRingProps) {
           r={radius}
           fill="none"
           strokeWidth={strokeWidth}
-          className="stroke-secondary"
+          className="stroke-muted"
         />
         {/* Progress circle */}
         <circle
@@ -62,13 +62,10 @@ export function ScoreRing({ score, size = "md", className }: ScoreRingProps) {
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           className={cn(getScoreColor(score), "transition-all duration-1000 ease-out")}
-          style={{
-            filter: `drop-shadow(0 0 6px currentColor)`,
-          }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={cn("font-bold font-mono", fontSize, getTextColor(score))}>
+        <span className={cn("font-bold tabular-nums", fontSize, getTextColor(score))}>
           {score}
         </span>
         {size === "lg" && (
