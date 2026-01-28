@@ -41,7 +41,7 @@ const brandDomains: Record<string, string> = {
   "Peugeot": "peugeot.com",
   "Polestar": "polestar.com",
   "Porsche": "porsche.com",
-  "Renault": "renault.com",
+  "Renault": "renault.fr",
   "Seat": "seat.com",
   "Skoda": "skoda-auto.com",
   "Smart": "smart.com",
@@ -54,9 +54,9 @@ const brandDomains: Record<string, string> = {
 }
 
 const sizeClasses = {
-  sm: "h-4 w-4",
-  md: "h-5 w-5",
-  lg: "h-6 w-6",
+  sm: "h-5 w-5",
+  md: "h-6 w-6",
+  lg: "h-8 w-8",
 }
 
 export function BrandLogo({ brand, size = "md", className = "" }: BrandLogoProps) {
