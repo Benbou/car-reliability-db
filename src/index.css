@@ -1,31 +1,46 @@
 @import "tailwindcss";
 
 @theme {
+  /* Light theme - Clean & Minimal */
   --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222.2 84% 4.9%);
+  --color-foreground: hsl(224 71% 4%);
   --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 84% 4.9%);
+  --color-card-foreground: hsl(224 71% 4%);
   --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222.2 84% 4.9%);
-  --color-primary: hsl(221.2 83.2% 53.3%);
-  --color-primary-foreground: hsl(210 40% 98%);
-  --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-muted: hsl(210 40% 96.1%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
-  --color-accent: hsl(210 40% 96.1%);
-  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(221.2 83.2% 53.3%);
+  --color-popover-foreground: hsl(224 71% 4%);
+
+  /* Primary - Neutral dark */
+  --color-primary: hsl(224 71% 4%);
+  --color-primary-foreground: hsl(210 20% 98%);
+
+  /* Secondary */
+  --color-secondary: hsl(220 14% 96%);
+  --color-secondary-foreground: hsl(224 71% 4%);
+
+  /* Muted */
+  --color-muted: hsl(220 14% 96%);
+  --color-muted-foreground: hsl(220 9% 46%);
+
+  /* Accent */
+  --color-accent: hsl(220 14% 96%);
+  --color-accent-foreground: hsl(224 71% 4%);
+
+  /* Destructive */
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(210 20% 98%);
+
+  /* Borders and inputs */
+  --color-border: hsl(220 13% 91%);
+  --color-input: hsl(220 13% 91%);
+  --color-ring: hsl(224 71% 4%);
+
+  /* Radius */
   --radius: 0.5rem;
 
   /* Appreciation colors */
-  --color-appreciation-tres-bon: hsl(142 76% 36%);
-  --color-appreciation-bon: hsl(142 71% 45%);
-  --color-appreciation-moyen: hsl(45 93% 47%);
+  --color-appreciation-tres-bon: hsl(142 71% 45%);
+  --color-appreciation-bon: hsl(142 69% 58%);
+  --color-appreciation-moyen: hsl(48 96% 53%);
   --color-appreciation-mauvais: hsl(25 95% 53%);
   --color-appreciation-tres-mauvais: hsl(0 84% 60%);
 }
@@ -38,4 +53,118 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Simple animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+/* Staggered delays */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+
+/* Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, hsl(220 14% 96%) 25%, hsl(220 14% 92%) 50%, hsl(220 14% 96%) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Simple hover for rows */
+.row-hover {
+  transition: background-color 0.15s ease;
+}
+
+.row-hover:hover {
+  background-color: hsl(220 14% 96%);
+}
+
+/* Card hover */
+.card-hover {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-hover:hover {
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+  border-color: hsl(220 13% 86%);
+}
+
+/* Badge colors */
+.badge-tres-bon {
+  background-color: hsl(142 76% 36%);
+  color: white;
+}
+
+.badge-bon {
+  background-color: hsl(142 69% 58%);
+  color: hsl(142 76% 10%);
+}
+
+.badge-moyen {
+  background-color: hsl(48 96% 53%);
+  color: hsl(48 96% 10%);
+}
+
+.badge-mediocre {
+  background-color: hsl(25 95% 53%);
+  color: white;
+}
+
+.badge-mauvais {
+  background-color: hsl(0 84% 60%);
+  color: white;
+}
+
+/* Glass effect - subtle */
+.glass {
+  background: hsla(0, 0%, 100%, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Mesh gradient - very subtle */
+.mesh-gradient-hero {
+  background: linear-gradient(180deg, hsl(220 14% 98%) 0%, hsl(0 0% 100%) 100%);
+}
+
+.mesh-gradient-card {
+  background: hsl(0 0% 100%);
+}
+
+/* Focus ring */
+.focus-ring:focus-visible {
+  outline: 2px solid hsl(224 71% 4%);
+  outline-offset: 2px;
 }

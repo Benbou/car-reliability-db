@@ -1,10 +1,13 @@
 import { useState, useMemo } from "react"
-import { Car, Shield, Database } from "lucide-react"
+import { Database, Car, Shield } from "lucide-react"
+import { Header } from "@/components/Header"
 import { SearchBar } from "@/components/SearchBar"
 import { CarTable } from "@/components/CarTable"
 import { FilterPanel } from "@/components/FilterPanel"
+import { CompareBar } from "@/components/CompareBar"
+import { CompareModal } from "@/components/CompareModal"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { Appreciation } from "@/types/car"
+import type { Appreciation, Car as CarType } from "@/types/car"
 import { carsData, getUniqueMarques, getUniqueTypes } from "@/data/cars"
 
 export function HomePage() {
@@ -12,6 +15,8 @@ export function HomePage() {
   const [modeleSearch, setModeleSearch] = useState("")
   const [typeFilter, setTypeFilter] = useState("")
   const [appreciationFilter, setAppreciationFilter] = useState("")
+  const [selectedCars, setSelectedCars] = useState<CarType[]>([])
+  const [showCompareModal, setShowCompareModal] = useState(false)
 
   const totalCars = carsData.length
   const totalMarques = new Set(carsData.map((c) => c.marque)).size
@@ -61,25 +66,44 @@ export function HomePage() {
     setAppreciationFilter("")
   }
 
+  const handleToggleCompare = (car: CarType) => {
+    setSelectedCars(prev => {
+      const exists = prev.find(c => c.id === car.id)
+      if (exists) {
+        return prev.filter(c => c.id !== car.id)
+      }
+      if (prev.length >= 4) return prev
+      return [...prev, car]
+    })
+  }
+
+  const handleRemoveFromCompare = (carId: number) => {
+    setSelectedCars(prev => prev.filter(c => c.id !== carId))
+  }
+
+  const handleClearCompare = () => {
+    setSelectedCars([])
+  }
+
   const hasFilters = marqueFilter || modeleSearch || typeFilter || appreciationFilter
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Compact Hero Section */}
-      <section className="border-b bg-gradient-to-b from-primary/5 to-background py-8">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="border-b bg-muted/30 py-8">
         <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-4xl">
-            <div className="mb-6 flex items-center justify-center gap-3">
-              <div className="rounded-full bg-primary/10 p-2.5">
-                <Car className="h-7 w-7 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                Fiabilité Automobile
-              </h1>
-            </div>
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Base de données fiabilité automobile
+            </h1>
+            <p className="mt-2 text-muted-foreground">
+              Comparez la fiabilité de {totalCars} modèles de {totalMarques} marques
+            </p>
 
             {/* Search Bar */}
-            <div className="mx-auto max-w-xl">
+            <div className="mt-6 mx-auto max-w-xl">
               <SearchBar
                 initialMarque={marqueFilter}
                 initialModele={modeleSearch}
@@ -87,7 +111,7 @@ export function HomePage() {
               />
             </div>
 
-            {/* Trust Indicators */}
+            {/* Stats */}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <Database className="h-4 w-4" />
@@ -109,13 +133,12 @@ export function HomePage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         <Card>
-          <CardHeader className="space-y-4 pb-4">
+          <CardHeader className="pb-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <CardTitle className="text-lg">
                 {hasFilters ? "Résultats" : "Tous les véhicules"}
                 <span className="ml-2 text-sm font-normal text-muted-foreground">
-                  ({filteredCars.length} véhicule
-                  {filteredCars.length > 1 ? "s" : ""})
+                  ({filteredCars.length} véhicule{filteredCars.length > 1 ? "s" : ""})
                 </span>
               </CardTitle>
             </div>
@@ -136,10 +159,35 @@ export function HomePage() {
           </CardHeader>
 
           <CardContent className="pt-0">
-            <CarTable cars={filteredCars} />
+            <CarTable
+              cars={filteredCars}
+              selectedCars={selectedCars}
+              onToggleCompare={handleToggleCompare}
+              maxCompare={4}
+            />
           </CardContent>
         </Card>
       </main>
+
+      {/* Compare Bar */}
+      <CompareBar
+        selectedCars={selectedCars}
+        onRemove={handleRemoveFromCompare}
+        onCompare={() => setShowCompareModal(true)}
+        onClear={handleClearCompare}
+      />
+
+      {/* Compare Modal */}
+      {showCompareModal && (
+        <CompareModal
+          cars={selectedCars}
+          onClose={() => setShowCompareModal(false)}
+          onRemove={handleRemoveFromCompare}
+        />
+      )}
+
+      {/* Bottom padding for compare bar */}
+      {selectedCars.length > 0 && <div className="h-16" />}
     </div>
   )
 }

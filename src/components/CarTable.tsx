@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
-import { ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react"
+import { ArrowUpDown, ChevronUp, ChevronDown, Plus, Check } from "lucide-react"
 import type { Car, Appreciation } from "@/types/car"
 import {
   Table,
@@ -14,9 +14,13 @@ import { Button } from "@/components/ui/button"
 import { AppreciationBadge } from "@/components/AppreciationBadge"
 import { FiabilityScore } from "@/components/FiabilityScore"
 import { BrandLogo } from "@/components/BrandLogo"
+import { cn } from "@/lib/utils"
 
 interface CarTableProps {
   cars: Car[]
+  selectedCars?: Car[]
+  onToggleCompare?: (car: Car) => void
+  maxCompare?: number
 }
 
 type SortField = "marque" | "modele" | "type" | "dateCommercialisation" | "appreciationQueChoisir" | "indiceFiabilite"
@@ -30,10 +34,17 @@ const appreciationOrder: Record<Appreciation, number> = {
   "Mauvais": 1,
 }
 
-export function CarTable({ cars }: CarTableProps) {
+export function CarTable({
+  cars,
+  selectedCars = [],
+  onToggleCompare,
+  maxCompare = 4
+}: CarTableProps) {
   const navigate = useNavigate()
   const [sortField, setSortField] = useState<SortField>("indiceFiabilite")
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc")
+
+  const selectedIds = new Set(selectedCars.map(c => c.id))
 
   const sortedCars = useMemo(() => {
     return [...cars].sort((a, b) => {
@@ -80,7 +91,8 @@ export function CarTable({ cars }: CarTableProps) {
     )
   }
 
-  const handleRowClick = (car: Car) => {
+  const handleRowClick = (car: Car, e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('.compare-cell')) return
     navigate(`/car/${car.id}`)
   }
 
@@ -96,6 +108,11 @@ export function CarTable({ cars }: CarTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
+          {onToggleCompare && (
+            <TableHead className="w-10">
+              <span className="sr-only">Comparer</span>
+            </TableHead>
+          )}
           <TableHead>
             <Button
               variant="ghost"
@@ -165,31 +182,65 @@ export function CarTable({ cars }: CarTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {sortedCars.map((car) => (
-          <TableRow
-            key={car.id}
-            className="cursor-pointer"
-            onClick={() => handleRowClick(car)}
-          >
-            <TableCell className="font-medium">
-              <div className="flex items-center gap-2">
-                <BrandLogo brand={car.marque} size="sm" />
-                <span>{car.marque}</span>
-              </div>
-            </TableCell>
-            <TableCell>{car.modele}</TableCell>
-            <TableCell className="hidden md:table-cell">{car.type}</TableCell>
-            <TableCell className="hidden lg:table-cell">
-              {car.dateCommercialisation}
-            </TableCell>
-            <TableCell>
-              <AppreciationBadge appreciation={car.appreciationQueChoisir} />
-            </TableCell>
-            <TableCell>
-              <FiabilityScore score={car.indiceFiabilite} />
-            </TableCell>
-          </TableRow>
-        ))}
+        {sortedCars.map((car) => {
+          const isSelected = selectedIds.has(car.id)
+          const canSelect = isSelected || selectedCars.length < maxCompare
+
+          return (
+            <TableRow
+              key={car.id}
+              className={cn(
+                "cursor-pointer",
+                isSelected && "bg-muted/50"
+              )}
+              onClick={(e) => handleRowClick(car, e)}
+            >
+              {onToggleCompare && (
+                <TableCell className="compare-cell">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (canSelect) onToggleCompare(car)
+                    }}
+                    disabled={!canSelect}
+                    className={cn(
+                      "flex h-6 w-6 items-center justify-center rounded border transition-colors",
+                      isSelected
+                        ? "bg-primary border-primary text-primary-foreground"
+                        : canSelect
+                          ? "border-input hover:border-primary hover:bg-muted"
+                          : "border-input opacity-50 cursor-not-allowed"
+                    )}
+                    aria-label={isSelected ? "Retirer de la comparaison" : "Ajouter à la comparaison"}
+                  >
+                    {isSelected ? (
+                      <Check className="h-3.5 w-3.5" />
+                    ) : (
+                      <Plus className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                </TableCell>
+              )}
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-2">
+                  <BrandLogo brand={car.marque} size="sm" />
+                  <span>{car.marque}</span>
+                </div>
+              </TableCell>
+              <TableCell>{car.modele}</TableCell>
+              <TableCell className="hidden md:table-cell">{car.type}</TableCell>
+              <TableCell className="hidden lg:table-cell">
+                {car.dateCommercialisation}
+              </TableCell>
+              <TableCell>
+                <AppreciationBadge appreciation={car.appreciationQueChoisir} />
+              </TableCell>
+              <TableCell>
+                <FiabilityScore score={car.indiceFiabilite} />
+              </TableCell>
+            </TableRow>
+          )
+        })}
       </TableBody>
     </Table>
   )

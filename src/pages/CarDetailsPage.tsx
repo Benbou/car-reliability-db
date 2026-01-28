@@ -2,9 +2,11 @@ import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, Calendar, Car, Tag } from "lucide-react"
 import { getCarById } from "@/data/cars"
 import { Header } from "@/components/Header"
+import { Breadcrumb } from "@/components/Breadcrumb"
 import { AppreciationBadge } from "@/components/AppreciationBadge"
 import { FiabilityScore } from "@/components/FiabilityScore"
 import { BrandLogo } from "@/components/BrandLogo"
+import { SimilarCars } from "@/components/SimilarCars"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -44,10 +46,18 @@ export function CarDetailsPage() {
       <Header />
 
       <main className="container mx-auto px-4 py-8">
-        <Button asChild variant="ghost" className="mb-6">
+        <Breadcrumb
+          items={[
+            { label: "Recherche", href: "/" },
+            { label: car.marque },
+            { label: car.modele },
+          ]}
+        />
+
+        <Button asChild variant="ghost" className="mb-6 -ml-3 md:hidden">
           <Link to="/">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour aux résultats
+            Retour
           </Link>
         </Button>
 
@@ -56,16 +66,18 @@ export function CarDetailsPage() {
           <Card className="md:col-span-2">
             <CardHeader>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-3 text-2xl">
-                    <BrandLogo brand={car.marque} size="lg" />
-                    <span>{car.marque} {car.modele}</span>
-                  </CardTitle>
-                  <CardDescription className="mt-1">{car.type}</CardDescription>
+                <div className="flex items-center gap-3">
+                  <BrandLogo brand={car.marque} size="lg" />
+                  <div>
+                    <CardTitle className="text-2xl">
+                      {car.marque} {car.modele}
+                    </CardTitle>
+                    <CardDescription>{car.type}</CardDescription>
+                  </div>
                 </div>
                 <AppreciationBadge
                   appreciation={car.appreciationQueChoisir}
-                  className="w-fit text-sm"
+                  className="w-fit"
                 />
               </div>
             </CardHeader>
@@ -74,12 +86,7 @@ export function CarDetailsPage() {
           {/* Fiability Score Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <div className="rounded-full bg-primary/10 p-2">
-                  <Car className="h-4 w-4 text-primary" />
-                </div>
-                Indice de Fiabilité
-              </CardTitle>
+              <CardTitle className="text-lg">Indice de Fiabilité</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -97,17 +104,15 @@ export function CarDetailsPage() {
           {/* Details Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <div className="rounded-full bg-primary/10 p-2">
-                  <Tag className="h-4 w-4 text-primary" />
-                </div>
-                Détails du Véhicule
-              </CardTitle>
+              <CardTitle className="text-lg">Détails du Véhicule</CardTitle>
             </CardHeader>
             <CardContent>
               <dl className="space-y-4">
                 <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Marque</dt>
+                  <dt className="flex items-center gap-2 text-muted-foreground">
+                    <Car className="h-4 w-4" />
+                    Marque
+                  </dt>
                   <dd className="flex items-center gap-2 font-medium">
                     <BrandLogo brand={car.marque} size="sm" />
                     {car.marque}
@@ -118,11 +123,14 @@ export function CarDetailsPage() {
                   <dd className="font-medium">{car.modele}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Type</dt>
+                  <dt className="flex items-center gap-2 text-muted-foreground">
+                    <Tag className="h-4 w-4" />
+                    Type
+                  </dt>
                   <dd className="font-medium">{car.type}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="flex items-center gap-1 text-muted-foreground">
+                  <dt className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="h-4 w-4" />
                     Commercialisation
                   </dt>
@@ -132,7 +140,20 @@ export function CarDetailsPage() {
             </CardContent>
           </Card>
 
-          {/* Appreciation Legend Card */}
+          {/* Similar Cars */}
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-lg">Véhicules similaires</CardTitle>
+              <CardDescription>
+                Véhicules du même segment avec un niveau de fiabilité comparable
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SimilarCars currentCar={car} limit={4} />
+            </CardContent>
+          </Card>
+
+          {/* Legend Card */}
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="text-lg">Légende des Appréciations</CardTitle>
@@ -146,10 +167,8 @@ export function CarDetailsPage() {
                 <AppreciationBadge appreciation="Mauvais" />
               </div>
               <p className="mt-4 text-sm text-muted-foreground">
-                L'appréciation est basée sur les données collectées par Que
-                Choisir auprès des propriétaires de véhicules. L'indice de
-                fiabilité prend en compte les pannes, les coûts de réparation et
-                la satisfaction globale.
+                L'appréciation est basée sur les données collectées par Que Choisir
+                auprès des propriétaires de véhicules.
               </p>
             </CardContent>
           </Card>
